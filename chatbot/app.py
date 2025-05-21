@@ -10,31 +10,42 @@ from langchain.llms import Ollama
 
 import history_manager as hm
 
+import os
+
 app = FastAPI()
 
+# Setup
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-def get_chain():
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    db = FAISS.load_local("vector_store", embeddings)
-    retriever = db.as_retriever()
-    llm = Ollama(model="llama3")  # Change to your model
-    return RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+# Global QA chain
+qa_chain = None
 
-qa_chain = get_chain()
+
+def get_chain():
+    global qa_chain
+    if qa_chain is None:
+        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        db = FAISS.load_local("vector_store", embeddings)
+        retriever = db.as_retriever()
+        llm = Ollama(model="llama3")  # You can change the model here
+        qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+    return qa_chain
+
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     history = hm.load_history()
     return templates.TemplateResponse("chat.html", {"request": request, "history": history})
 
+
 @app.post("/chat", response_class=HTMLResponse)
 async def chat(request: Request, user_input: str = Form(...)):
+    qa = get_chain()
     history = hm.load_history()
     hm.add_message(history, "user", user_input)
 
-    response = qa_chain.run(user_input)
+    response = qa.run(user_input)
     hm.add_message(history, "bot", response)
 
     return templates.TemplateResponse("chat.html", {
