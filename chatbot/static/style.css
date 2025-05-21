@@ -1,0 +1,7 @@
+body { font-family: Arial; margin: 30px; }
+h1 { color: #333; }
+.chat-box { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: scroll; margin-bottom: 20px; background: #f9f9f9; }
+.user { color: blue; margin: 5px 0; }
+.bot { color: green; margin: 5px 0; }
+input[type="text"] { width: 70%; padding: 10px; }
+button { padding: 10px; }

@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+jinja2
+langchain
+faiss-cpu
+sentence-transformers
+pypdf2
+python-docx
+ollama

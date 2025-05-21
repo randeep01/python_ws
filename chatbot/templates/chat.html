@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Local Chatbot</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <h1>📚 Local Document Chatbot</h1>
+    <div class="chat-box">
+        {% for msg in history %}
+            <div class="{{ msg.role }}">{{ msg.role }}: {{ msg.content }}</div>
+        {% endfor %}
+    </div>
+    <form action="/chat" method="post">
+        <input type="text" name="user_input" placeholder="Ask a question..." required>
+        <button type="submit">Send</button>
+    </form>
+</body>
+</html>
